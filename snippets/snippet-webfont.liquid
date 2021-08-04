@@ -1,0 +1,90 @@
+{% assign google_font_families = '' %}
+
+{% unless settings.font-logo-google.size > 0 or settings.font-logo-typekit.size > 0 %}
+  {% assign font_family = settings.font-logo %}
+  {% assign google_check = font_family | truncate: 6, '' %}
+  {% if google_check == 'google' %}
+    {% assign words = font_family | split: ', ' %}
+    {% capture google_font_families %}{{ google_font_families }}'{{ words[1] | replace: "'", "" }}:400,700', {% endcapture %}
+  {% endif %}
+{% endunless %}
+
+{% unless settings.font-nav-google.size > 0 or settings.font-nav-typekit.size > 0 %}
+  {% assign font_family = settings.font-mainmenu %}
+  {% assign google_check = font_family | truncate: 6, '' %}
+  {% if google_check == 'google' %}
+    {% assign words = font_family | split: ', ' %}
+    {% capture google_font_families %}{{ google_font_families }}'{{ words[1] | replace: "'", "" }}:400,700', {% endcapture %}
+  {% endif %}
+{% endunless %}
+
+{% unless settings.font-headings-google.size > 0 or settings.font-headings-typekit.size > 0 %}
+  {% assign font_family = settings.font-headings %}
+  {% assign google_check = font_family | truncate: 6, '' %}
+  {% if google_check == 'google' %}
+    {% assign words = font_family | split: ', ' %}
+    {% capture google_font_families %}{{ google_font_families }}'{{ words[1] | replace: "'", "" }}:400,700', {% endcapture %}
+  {% endif %}
+{% endunless %}
+
+{% unless settings.font-text-google.size > 0 or settings.font-text-typekit.size > 0 %}
+  {% assign font_family = settings.font-text %}
+  {% assign google_check = font_family | truncate: 6, '' %}
+  {% if google_check == 'google' %}
+    {% assign words = font_family | split: ', ' %}
+    {% capture google_font_families %}{{ google_font_families }}'{{ words[1] | replace: "'", "" }}:400,700', {% endcapture %}
+  {% endif %}
+{% endunless %}
+
+{% unless settings.font-accent-google.size > 0 or settings.font-accent-typekit.size > 0 %}
+  {% assign font_family = settings.font-accent %}
+  {% assign google_check = font_family | truncate: 6, '' %}
+  {% if google_check == 'google' %}
+    {% assign words = font_family | split: ', ' %}
+    {% capture google_font_families %}{{ google_font_families }}'{{ words[1] | replace: "'", "" }}:400,700', {% endcapture %}
+  {% endif %}
+{% endunless %}
+
+
+{% if settings.font-logo-google.size > 0 %}
+  {% capture google_font_families %}{{ google_font_families }}'{{ settings.font-logo-google }}:400,700', {% endcapture %}
+{% endif %}
+
+{% if settings.font-nav-google.size > 0 %}
+  {% capture google_font_families %}{{ google_font_families }}'{{ settings.font-nav-google }}:400,700', {% endcapture %}
+{% endif %}
+
+{% if settings.font-headings-google.size > 0 %}
+  {% capture google_font_families %}{{ google_font_families }}'{{ settings.font-headings-google }}:400,700', {% endcapture %}
+{% endif %}
+
+{% if settings.font-text-google.size > 0 %}
+  {% capture google_font_families %}{{ google_font_families }}'{{ settings.font-text-google }}:400,700', {% endcapture %}
+{% endif %}
+
+{% if settings.font-accent-google.size > 0 %}
+ {% capture google_font_families %}{{ google_font_families }}'{{ settings.font-accent-google }}:400,700', {% endcapture %}
+{% endif %}
+
+
+{% assign typekit_enabled = false %}
+{% if settings.font-advanced-typekit-id.size > 0 and settings.font-advanced-typekit-id != 'xxxxxxx' %}
+  {% if settings.font-logo-typekit.size > 0 or settings.font-nav-typekit.size > 0 or settings.font-headings-typekit.size > 0 or settings.font-text-typekit.size > 0 or settings.font-accent-typekit.size > 0 %}
+    {% assign typekit_enabled = true %}
+  {% endif %}
+{% endif %}
+
+
+{% if google_font_families.size > 0 or typekit_enabled %}
+<script>
+  WebFontConfig = {
+    {% if typekit_enabled %}
+    typekit: { id: '{{ settings.font-advanced-typekit-id }}' },
+    {% endif %}
+    {% if google_font_families.size > 0 %}
+    google: { families: [{{ google_font_families }}] }
+    {% endif %}
+  };
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+{% endif %}

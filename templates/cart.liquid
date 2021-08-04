@@ -1,0 +1,160 @@
+{%  include 'subscription-cart-footer' %} 
+ <header class="row">
+  <div class="columns">
+    <h1 class="page-title">{{ 'cart.page_title' | t }}</h1>
+  </div>
+</header>
+
+{% if cart.item_count > 0 %}
+
+<form action="/cart" method="post" class="custom">
+  <div class="row">
+    <div class="columns">
+      <table width="100%" class="cart-table">
+        <thead>
+          <tr>
+            <th class="image">&nbsp;</th>
+            <th class="title">&nbsp;</th>
+            <th class="quantity">{{ 'cart.quantity' | t }}</th>
+            <th class="total">{{ 'cart.total' | t }}</th>
+            <th class="remove">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+        {% for item in cart.items %}
+       
+          {% if forloop.first %}
+            {% assign coll_handle = item.product.collections.first.handle %}
+            {% if coll_handle == 'frontpage' or coll_handle == '' %}{% assign coll_handle = 'all' %}{% endif %}
+          {% endif %}
+          <tr>
+            <td class="image">
+              <a href="{{ item.url | within: collections.all }}">
+              
+                <img src="{{ item | img_url: 'medium' }}" alt="{{ item.title | escape }}" />
+              </a>
+
+              <p class="mobile-title">
+                <a href="{{ item.product.url }}">{{ item.title }}
+<span class='booster-cart-item-success-notes' data-key='{{item.key}}'></span><span class='booster-cart-item-upsell-notes' data-key='{{item.key}}'></span></a>
+                {% assign property_size = item.properties | size %}
+                  {% if property_size > 0 %}
+                    {% for p in item.properties %}
+                      {% unless p.last == blank or p.first == "subscription_id" or p.first == "shipping_interval_frequency" or p.first == "shipping_interval_unit_type" %}
+                        {{ p.first }}:
+
+                        {% comment %}
+                          Check if there was an uploaded file associated
+                        {% endcomment %}
+                        {% if p.last contains '/uploads/' %}
+                          <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                        {% else %}
+                          {{ p.last }}
+                        {% endif %}
+
+                        <br>
+                      {% endunless %}
+                    {% endfor %}
+                  {% endif %}
+              </p>
+
+            </td>
+            <td class="title">
+              <p><a href="{{ item.url | within: collections.all }}">{{ item.title }}
+<span class='booster-cart-item-success-notes' data-key='{{item.key}}'></span><span class='booster-cart-item-upsell-notes' data-key='{{item.key}}'></span></a></p>
+{% if item.selling_plan_allocation != empty  %}
+  <span class="selling-plan-details" data-bsub-item-key="{{item.key}}">
+    {{item.selling_plan_allocation.selling_plan.name}}
+  </span>
+{% endif %}
+              {% assign property_size = item.properties | size %}
+              {% if property_size > 0 %}
+                {% for p in item.properties %}
+                  {% unless p.last == blank or p.first == "subscription_id" or p.first == "shipping_interval_frequency" or p.first == "shipping_interval_unit_type" %}
+                    {{ p.first }}:
+
+                    {% comment %}
+                      Check if there was an uploaded file associated
+                    {% endcomment %}
+                    {% if p.last contains '/uploads/' %}
+                      <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                    {% else %}
+                      {{ p.last }}
+                    {% endif %}
+
+                    <br>
+                  {% endunless %}
+                {% endfor %}
+              {% endif %}
+            
+
+            </td>
+            <td class="quantity"><input type="text" class="field styled-input" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" /></td>
+            <td class="total"><span class="money"><span class='booster-cart-item-line-price' data-key='{{item.key}}'>{{ item.line_price | money }}</span></span></td>
+            <td class="remove"><a title="Remove" href="/cart/change?line={{ forloop.index }}&quantity=0" aria-hidden="true" class="glyph cross" title="remove"></a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div> <!-- .row -->
+      
+  <div class="row">
+
+    <div class="columns large-5">
+
+      {% if settings.cart-notes-show %}
+        <div class="order-notes">
+          <div class="container">
+            <h3>{{ 'cart.order_notes' | t }}</h3>
+            <textarea id="cart-notes-area" name="note">{{ cart.note }}</textarea>
+          </div>
+        </div>
+      {% endif %}
+      
+      <div class="continue-shopping show-for-medium-up">
+        <span><a href="/collections/{{ coll_handle }}"><span aria-hidden="true" class="glyph arrow-left"></span> {{ 'cart.continue_shopping' | t }}</a></span>
+      </div>
+    </div>
+
+
+    <div class="columns large-7">
+      <div class="totals columns">
+        <h3><strong>{{ 'cart.subtotal' | t }} <span class="money"><span class="wh-original-cart-total"><span class='wh-original-price'>{{ cart.total_price | money }}</span></span><span class="wh-cart-total"></span><div class="additional-notes"><span class="wh-minimums-note"></span><span class="wh-extra-note"></span></div></span></strong></h3>
+        <p class="shipping-taxes-notification">{{ 'cart.shipping_taxes_notification' | t}}</p>
+        <input type="submit" name="update" class="button" value="{{ 'cart.update_cart' | t }}" />
+        <input  class="button" type="submit" name="checkout" value="{{ 'cart.checkout' | t }}" />
+        {% include 'hear-about-us' %}
+        {% if additional_checkout_buttons %}
+        <p class="additional-checkout-buttons">
+          {{ content_for_additional_checkout_buttons }}
+        </p>
+        {% endif %}
+      </div>
+
+    <div class="continue-shopping show-for-small right">
+        <span><a href="/collections/{{ coll_handle }}"><span aria-hidden="true" class="glyph arrow-left"></span> {{ 'cart.continue_shopping' | t }}</a></span>
+      </div>
+    </div>
+
+
+
+
+  </div> <!-- .row -->
+</form>
+
+
+{% else %}
+
+<section class="empty-cart row">
+  <div class="columns">
+    <h1>{{ 'cart.empty.cart_feedback' | t }}</h1>
+    <p><a class="button" href="/collections/all">{{ 'cart.empty.cart_button' | t }}</a></p>
+  </div>
+</section><!-- #empty-cart -->
+
+{% endif %} <!-- if cart.item_count > 0  -->
+
+
